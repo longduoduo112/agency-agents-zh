@@ -48,7 +48,7 @@ Chinese community edition of [agency-agents](https://github.com/msitarzewski/age
 ./scripts/install.sh --tool qwen           # Qwen Code
 ```
 
-> 部分工具需要先執行 `./scripts/convert.sh` 轉換格式，詳見下方工具整合說明。
+> 轉換後的檔案已包含在倉庫中，直接執行 `install.sh` 即可。`convert.sh` 僅在需要重新生成時使用。
 
 ### 🔥 OpenClaw 使用者快速上手
 
@@ -458,13 +458,12 @@ cp -r marketing/*.md ~/.claude/agents/
 ### 使用方法
 
 ```bash
-# 第一步：轉換格式（Claude Code 和 Copilot 可跳過此步）
-./scripts/convert.sh                    # 轉換為所有工具格式
-./scripts/convert.sh --tool openclaw    # 只轉換 OpenClaw 格式
-
-# 第二步：安裝到本地
+# 安裝到本地（轉換檔案已包含在倉庫中，無需額外步驟）
 ./scripts/install.sh                    # 自動檢測並安裝
-./scripts/install.sh --tool openclaw    # 安裝到指定工具
+./scripts/install.sh --tool cursor      # 安裝到指定工具
+
+# 如需重新生成轉換檔案（通常不需要）
+./scripts/convert.sh                    # 重新轉換所有工具格式
 
 # 檢查智能體檔案格式
 ./scripts/lint-agents.sh
@@ -525,7 +524,6 @@ openclaw gateway restart
 轉換為 Antigravity skill 格式並安裝到 `~/.gemini/antigravity/skills/`。
 
 ```bash
-./scripts/convert.sh --tool antigravity
 ./scripts/install.sh --tool antigravity
 ```
 </details>
@@ -536,7 +534,6 @@ openclaw gateway restart
 轉換為 Gemini CLI 擴充套件格式並安裝到 `~/.gemini/extensions/agency-agents/`。
 
 ```bash
-./scripts/convert.sh --tool gemini-cli
 ./scripts/install.sh --tool gemini-cli
 ```
 </details>
@@ -547,7 +544,6 @@ openclaw gateway restart
 轉換為 Qwen Code SubAgent 格式並安裝到專案目錄 `.qwen/agents/`。
 
 ```bash
-./scripts/convert.sh --tool qwen
 cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool qwen
 ```
@@ -567,32 +563,23 @@ cd /your/project
 
 **安裝：**
 ```bash
-./scripts/convert.sh --tool cursor
 cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool cursor
 ```
 
 **安裝後如何使用：**
 
-1. 開啟 Cursor，確認專案根目錄有 `.cursor/rules/` 且包含 `.mdc` 檔案
-2. 進入 **Cursor Settings**（`Cmd+,` / `Ctrl+,`）→ **Rules** → **Project Rules**
-3. 你會看到所有已安裝的智能體規則，預設為未啟用狀態
-4. **啟用你需要的智能體**（建議按需啟用，不要全部開啟以避免上下文過長）
-5. 啟用後，在 Cursor Chat 或 Composer 中智能體規則會自動生效
+1. 在專案根目錄執行安裝命令後，`.cursor/rules/` 會包含所有智能體的 `.mdc` 檔案
+2. Cursor 會根據每個規則的 `description` 欄位**自動判斷相關性** — 當你的問題與某個智能體相關時，Cursor 會自動引用它
+3. 你也可以在 **Cursor Settings** → **Rules** → **Project Rules** 中檢視和管理所有規則
+4. 建議：如果不需要全部 180 個規則，可以刪除不需要的 `.mdc` 檔案以減少噪音
 
 **使用範例：**
 ```
-# 在 Cursor Chat 中直接對話，已啟用的規則會自動影響回答
-幫我審查這個元件的效能問題
-
-# 或在 Composer 中引用特定規則
-@rules 使用前端開發者的標準來重構這段程式碼
+# Cursor 會自動匹配相關智能體
+幫我審查這個元件的效能問題   → 自動匹配前端開發者
+這段程式碼有安全漏洞嗎         → 自動匹配安全審計員
 ```
-
-> **常見問題**：如果在 Cursor 中看不到規則，請確認：
-> - `.cursor/rules/` 目錄在專案根目錄下（不是全域目錄）
-> - 檔案副檔名是 `.mdc`（不是 `.md`）
-> - 已重新開啟專案或重新啟動 Cursor
 </details>
 
 <details>
@@ -601,7 +588,6 @@ cd /your/project
 轉換為 Trae rule 檔案並安裝到專案目錄 `.trae/rules/`。格式與 Cursor 類似。
 
 ```bash
-./scripts/convert.sh --tool trae
 cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool trae
 ```
@@ -613,7 +599,6 @@ cd /your/project
 轉換為 OpenCode agent 檔案並安裝到專案目錄 `.opencode/agents/`。
 
 ```bash
-./scripts/convert.sh --tool opencode
 cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool opencode
 ```
@@ -625,7 +610,6 @@ cd /your/project
 所有智能體編譯為單個 `CONVENTIONS.md` 檔案，Aider 會自動讀取。
 
 ```bash
-./scripts/convert.sh --tool aider
 cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool aider
 ```
@@ -642,7 +626,6 @@ cd /your/project
 所有智能體編譯為單個 `.windsurfrules` 檔案。
 
 ```bash
-./scripts/convert.sh --tool windsurf
 cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool windsurf
 ```
