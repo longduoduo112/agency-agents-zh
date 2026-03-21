@@ -23,6 +23,23 @@ Chinese community edition of [agency-agents](https://github.com/msitarzewski/age
 
 **186 个即插即用的 AI 专家人格**——每个都有独特的专业技能、沟通风格和可落地的工作流，不是通用模板。
 
+### 🤝 多智能体协作
+
+单个角色很强，但多个角色**协作**更强。[Agency Orchestrator](https://github.com/jnMetaCode/agency-orchestrator) 是配套的多智能体编排引擎——用 YAML 定义工作流，自动调度角色协作：
+
+```bash
+npm install agency-orchestrator
+npx ao run workflows/story-creation.yaml --input premise='你的创意'
+```
+
+```
+叙事学家 ──→ 心理学家    ──→ 内容创作者
+          └→ 叙事设计师 ──┘
+           (自动并行)
+```
+
+支持 DeepSeek / Claude / OpenAI / Ollama，零代码，写 YAML 就能编排 186 个角色。[了解更多 →](https://github.com/jnMetaCode/agency-orchestrator)
+
 ---
 
 ## 快速开始
