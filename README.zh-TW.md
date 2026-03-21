@@ -559,7 +559,9 @@ cd /your/project
 <details>
 <summary><strong>Cursor</strong></summary>
 
-轉換為 Cursor rule 檔案（`.mdc`）並安裝到專案目錄 `.cursor/rules/`。
+每個智能體會變成一個 `.mdc` 規則檔案，安裝到專案目錄 `.cursor/rules/`。
+
+Cursor 使用 **「智慧匹配」模式**（`alwaysApply: false`）：AI 根據每個規則的 `description` 欄位自動判斷是否相關，相關時自動引用完整內容。
 
 **安裝：**
 ```bash
@@ -567,19 +569,34 @@ cd /your/project
 /path/to/agency-agents-zh/scripts/install.sh --tool cursor
 ```
 
+**⚠️ 重要：建議精選安裝**
+
+全部安裝 180 個規則會導致 Cursor 需要掃描大量 description 來判斷相關性，**可能影響匹配準確度**。推薦做法：
+
+```bash
+# 方法一：先全量安裝，再刪除不需要的
+/path/to/agency-agents-zh/scripts/install.sh --tool cursor
+# 然後手動刪除 .cursor/rules/ 中不需要的 .mdc 檔案
+
+# 方法二：只複製你需要的智能體
+mkdir -p .cursor/rules
+cp /path/to/agency-agents-zh/integrations/cursor/rules/engineering-frontend-developer.mdc .cursor/rules/
+cp /path/to/agency-agents-zh/integrations/cursor/rules/engineering-code-reviewer.mdc .cursor/rules/
+# ... 按需複製
+```
+
 **安裝後如何使用：**
 
-1. 在專案根目錄執行安裝命令後，`.cursor/rules/` 會包含所有智能體的 `.mdc` 檔案
-2. Cursor 會根據每個規則的 `description` 欄位**自動判斷相關性** — 當你的問題與某個智能體相關時，Cursor 會自動引用它
-3. 你也可以在 **Cursor Settings** → **Rules** → **Project Rules** 中檢視和管理所有規則
-4. 建議：如果不需要全部 180 個規則，可以刪除不需要的 `.mdc` 檔案以減少噪音
+1. 安裝後 `.cursor/rules/` 中的 `.mdc` 檔案會自動被 Cursor 識別
+2. 在 Chat 或 Composer 中正常提問，Cursor **自動匹配**相關智能體：
+   ```
+   幫我審查這個元件的效能問題   → 自動匹配前端開發者
+   這段程式碼有安全漏洞嗎         → 自動匹配安全審計員
+   ```
+3. 也可以在 **Cursor Settings**（`Cmd+,`）→ **Rules** → **Project Rules** 中檢視所有規則
+4. 還可以在 Chat 中用 `@規則名` 手動指定引用某個智能體
 
-**使用範例：**
-```
-# Cursor 會自動匹配相關智能體
-幫我審查這個元件的效能問題   → 自動匹配前端開發者
-這段程式碼有安全漏洞嗎         → 自動匹配安全審計員
-```
+> **排查**：如果看不到規則，確認 `.cursor/rules/` 在專案根目錄、檔案副檔名是 `.mdc`、已重新開啟專案。
 </details>
 
 <details>
