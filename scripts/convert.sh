@@ -21,6 +21,7 @@
 #   codex        — OpenAI Codex CLI agent 文件 (.codex/agents/*.toml)
 #   deerflow     — DeerFlow 2.0 custom skill 文件 (skills/custom/<slug>/SKILL.md)
 #   workbuddy    — WorkBuddy skill 文件 (~/.workbuddy/skills/<slug>/SKILL.md)
+#   hermes       — Hermes Agent skill 文件 (~/.hermes/skills/<category>/<slug>/SKILL.md)
 #   kiro         — Kiro agent JSON 文件 (.kiro/agents/*.json + prompts/*.md)
 #   all          — 所有工具（默认）
 #
@@ -438,6 +439,37 @@ ${body}
 HEREDOC
 }
 
+convert_hermes() {
+  local file="$1"
+  local name description slug body category outdir outfile
+
+  name="$(get_field "name" "$file")"
+  description="$(get_field "description" "$file")"
+  slug="$(slugify_from_file "$file")"
+  body="$(get_body "$file")"
+
+  # 从文件路径提取分类目录名（如 engineering、marketing）
+  category="$(basename "$(dirname "$file")")"
+
+  outdir="$OUT_DIR/hermes/$category/$slug"
+  outfile="$outdir/SKILL.md"
+  mkdir -p "$outdir"
+
+  cat > "$outfile" <<HEREDOC
+---
+name: ${slug}
+description: ${description}
+version: 1.0.0
+author: agency-agents-zh
+license: MIT
+metadata:
+  hermes:
+    tags: [${category}]
+---
+${body}
+HEREDOC
+}
+
 convert_kiro() {
   local file="$1"
   local name description slug body
@@ -566,6 +598,7 @@ run_conversions() {
         codex)       convert_codex       "$file" ;;
         deerflow)    convert_deerflow    "$file" ;;
         workbuddy)   convert_workbuddy   "$file" ;;
+        hermes)      convert_hermes      "$file" ;;
         kiro)        convert_kiro        "$file" ;;
         aider)       accumulate_aider    "$file" ;;
         windsurf)    accumulate_windsurf "$file" ;;
@@ -593,7 +626,7 @@ main() {
     esac
   done
 
-  local valid_tools=("antigravity" "gemini-cli" "opencode" "cursor" "trae" "aider" "windsurf" "openclaw" "qwen" "codex" "deerflow" "workbuddy" "kiro" "all")
+  local valid_tools=("antigravity" "gemini-cli" "opencode" "cursor" "trae" "aider" "windsurf" "openclaw" "qwen" "codex" "deerflow" "workbuddy" "hermes" "kiro" "all")
   local valid=false
   for t in "${valid_tools[@]}"; do [[ "$t" == "$tool" ]] && valid=true && break; done
   if ! $valid; then
@@ -609,7 +642,7 @@ main() {
 
   local tools_to_run=()
   if [[ "$tool" == "all" ]]; then
-    tools_to_run=("antigravity" "gemini-cli" "opencode" "cursor" "trae" "aider" "windsurf" "openclaw" "qwen" "codex" "deerflow" "workbuddy" "kiro")
+    tools_to_run=("antigravity" "gemini-cli" "opencode" "cursor" "trae" "aider" "windsurf" "openclaw" "qwen" "codex" "deerflow" "workbuddy" "hermes" "kiro")
   else
     tools_to_run=("$tool")
   fi

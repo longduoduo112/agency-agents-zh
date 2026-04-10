@@ -19,6 +19,7 @@
 #   codex        — OpenAI Codex CLI agent 文件
 #   deerflow     — DeerFlow 2.0 custom skill 文件
 #   workbuddy    — WorkBuddy skill 文件
+#   hermes       — Hermes Agent skill 文件
 #   kiro         — Kiro agent JSON 文件
 #   all          — 所有工具（默认）
 
@@ -44,7 +45,7 @@ $AgentDirs = @(
 )
 
 $ValidTools = @("antigravity","gemini-cli","opencode","cursor","trae","aider",
-                "windsurf","openclaw","qwen","codex","deerflow","workbuddy","kiro","all")
+                "windsurf","openclaw","qwen","codex","deerflow","workbuddy","hermes","kiro","all")
 
 # --- 颜色输出 ---
 function Write-OK   { param($msg) Write-Host "[OK]  $msg" -ForegroundColor Green }
@@ -311,6 +312,30 @@ $body
 "@ | Set-Content -Path (Join-Path $outDir "SKILL.md") -Encoding UTF8
 }
 
+function Convert-Hermes {
+    param([string]$File, [string[]]$Lines)
+    $description = Get-Field "description" $Lines
+    $slug        = Get-Slug $File
+    $body        = Get-Body $Lines
+    # 从文件路径提取分类目录名
+    $category    = Split-Path -Leaf (Split-Path -Parent $File)
+    $outDir      = Join-Path $OutDir "hermes\$category\$slug"
+    New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+    @"
+---
+name: $slug
+description: $description
+version: 1.0.0
+author: agency-agents-zh
+license: MIT
+metadata:
+  hermes:
+    tags: [$category]
+---
+$body
+"@ | Set-Content -Path (Join-Path $outDir "SKILL.md") -Encoding UTF8
+}
+
 function Convert-Kiro {
     param([string]$File, [string[]]$Lines)
     $description = Get-Field "description" $Lines
@@ -371,6 +396,7 @@ function Run-Conversions {
                 "codex"       { Convert-Codex       $filePath $lines }
                 "deerflow"    { Convert-DeerFlow    $filePath $lines }
                 "workbuddy"   { Convert-WorkBuddy   $filePath $lines }
+                "hermes"      { Convert-Hermes      $filePath $lines }
                 "kiro"        { Convert-Kiro        $filePath $lines }
                 "aider"       { Accumulate-Aider    $filePath $lines }
                 "windsurf"    { Accumulate-Windsurf $filePath $lines }

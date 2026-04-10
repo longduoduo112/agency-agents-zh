@@ -21,6 +21,7 @@
 #   codex        — 复制到 .codex\agents\（项目级）
 #   deerflow     — 复制到 DeerFlow custom skills 目录（项目级）
 #   workbuddy    — 复制到 %USERPROFILE%\.workbuddy\skills\（全局）
+#   hermes       — 复制到 %USERPROFILE%\.hermes\skills\（全局）
 #   kiro         — 复制到 %USERPROFILE%\.kiro\agents\（全局）
 #   all          — 安装所有已检测到的工具（默认）
 
@@ -40,7 +41,7 @@ $Home_        = $env:USERPROFILE
 
 $AllTools = @(
     "claude-code","copilot","antigravity","gemini-cli","opencode","openclaw",
-    "cursor","trae","aider","windsurf","qwen","codex","deerflow","workbuddy","kiro"
+    "cursor","trae","aider","windsurf","qwen","codex","deerflow","workbuddy","hermes","kiro"
 )
 
 # --- 颜色输出 ---
@@ -94,6 +95,8 @@ function Detect-Tool {
                         (Test-Path (Join-Path $Home_ ".deerflow")) }
         "workbuddy"   { (Get-Command workbuddy -ErrorAction SilentlyContinue) -or
                         (Test-Path (Join-Path $Home_ ".workbuddy")) }
+        "hermes"      { (Get-Command hermes -ErrorAction SilentlyContinue) -or
+                        (Test-Path (Join-Path $Home_ ".hermes")) }
         "kiro"        { (Get-Command kiro -ErrorAction SilentlyContinue) -or
                         (Get-Command kiro-cli -ErrorAction SilentlyContinue) -or
                         (Test-Path (Join-Path $Home_ ".kiro")) }
@@ -118,6 +121,7 @@ function Get-ToolLabel {
         "codex"       { "Codex CLI      (.codex\agents)" }
         "deerflow"    { "DeerFlow       (skills\custom)" }
         "workbuddy"   { "WorkBuddy      (%USERPROFILE%\.workbuddy\skills)" }
+        "hermes"      { "Hermes Agent   (%USERPROFILE%\.hermes\skills)" }
         "kiro"        { "Kiro           (%USERPROFILE%\.kiro\agents)" }
         default       { $ToolName }
     }
@@ -328,6 +332,27 @@ function Install-WorkBuddy {
     Write-OK "WorkBuddy: $count 个 skills -> $dest"
 }
 
+function Install-Hermes {
+    $src  = Join-Path $Integrations "hermes"
+    $dest = Join-Path $Home_ ".hermes\skills"
+    if (-not (Test-Path $src)) { Write-Err "integrations\hermes 不存在，请先运行 convert.ps1 -Tool hermes"; return }
+    $count = 0
+    # 保留两级目录结构：category/skill-name/SKILL.md
+    Get-ChildItem -Path $src -Directory | ForEach-Object {
+        $catName = $_.Name
+        Get-ChildItem -Path $_.FullName -Directory | ForEach-Object {
+            $skillFile = Join-Path $_.FullName "SKILL.md"
+            if (Test-Path $skillFile) {
+                $skillDest = Join-Path $dest "$catName\$($_.Name)"
+                New-Item -ItemType Directory -Force -Path $skillDest | Out-Null
+                Copy-Item $skillFile -Destination $skillDest
+                $count++
+            }
+        }
+    }
+    Write-OK "Hermes Agent: $count 个 skills -> $dest"
+}
+
 function Install-Kiro {
     $src  = Join-Path $Integrations "kiro"
     $dest = Join-Path $Home_ ".kiro\agents"
@@ -359,6 +384,7 @@ function Install-Tool {
         "codex"       { Install-Codex      }
         "deerflow"    { Install-DeerFlow   }
         "workbuddy"   { Install-WorkBuddy  }
+        "hermes"      { Install-Hermes     }
         "kiro"        { Install-Kiro       }
     }
 }

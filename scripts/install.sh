@@ -23,6 +23,7 @@
 #   codex        -- 复制到 .codex/agents/（项目级）
 #   deerflow     -- 复制到 DeerFlow custom skills 目录（Docker 项目级）
 #   workbuddy    -- 复制到 ~/.workbuddy/skills/（全局）
+#   hermes       -- 复制到 ~/.hermes/skills/（全局）
 #   kiro         -- 复制到 ~/.kiro/agents/（全局）
 #   all          -- 安装所有已检测到的工具（默认）
 
@@ -47,7 +48,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 INTEGRATIONS="$REPO_ROOT/integrations"
 
-ALL_TOOLS=(claude-code copilot antigravity gemini-cli opencode openclaw cursor trae aider windsurf qwen codex deerflow workbuddy kiro)
+ALL_TOOLS=(claude-code copilot antigravity gemini-cli opencode openclaw cursor trae aider windsurf qwen codex deerflow workbuddy hermes kiro)
 
 # --- 用法 ---
 usage() {
@@ -78,6 +79,7 @@ detect_qwen()         { command -v qwen >/dev/null 2>&1 || [[ -d "${HOME}/.qwen"
 detect_codex()        { command -v codex >/dev/null 2>&1 || [[ -d "${HOME}/.codex" ]]; }
 detect_deerflow()     { command -v deerflow >/dev/null 2>&1 || [[ -d "${HOME}/.deerflow" ]] || docker ps --format '{{.Names}}' 2>/dev/null | grep -q deerflow; }
 detect_workbuddy()    { command -v workbuddy >/dev/null 2>&1 || [[ -d "${HOME}/.workbuddy" ]]; }
+detect_hermes()       { command -v hermes >/dev/null 2>&1 || [[ -d "${HOME}/.hermes" ]]; }
 detect_kiro()         { command -v kiro >/dev/null 2>&1 || command -v kiro-cli >/dev/null 2>&1 || [[ -d "${HOME}/.kiro" ]]; }
 
 is_detected() {
@@ -96,6 +98,7 @@ is_detected() {
     codex)       detect_codex       ;;
     deerflow)    detect_deerflow    ;;
     workbuddy)   detect_workbuddy   ;;
+    hermes)      detect_hermes      ;;
     kiro)        detect_kiro        ;;
     *)           return 1 ;;
   esac
@@ -116,6 +119,7 @@ tool_label() {
     codex)       printf "%-14s  %s" "Codex CLI"    "(.codex/agents)"        ;;
     deerflow)    printf "%-14s  %s" "DeerFlow"     "(skills/custom)"        ;;
     workbuddy)   printf "%-14s  %s" "WorkBuddy"    "(~/.workbuddy/skills)"  ;;
+    hermes)      printf "%-14s  %s" "Hermes Agent" "(~/.hermes/skills)"     ;;
     kiro)        printf "%-14s  %s" "Kiro"         "(~/.kiro/agents)"       ;;
   esac
 }
@@ -382,6 +386,32 @@ install_workbuddy() {
   ok "WorkBuddy: $count 个 skills -> $dest"
 }
 
+install_hermes() {
+  local src="$INTEGRATIONS/hermes"
+  local dest="${HOME}/.hermes/skills"
+  local count=0
+
+  [[ -d "$src" ]] || { err "integrations/hermes 不存在。请先运行 convert.sh --tool hermes"; return 1; }
+
+  mkdir -p "$dest"
+
+  # Hermes 保留两级目录结构：category/skill-name/SKILL.md
+  local catdir
+  while IFS= read -r -d '' catdir; do
+    local catname; catname="$(basename "$catdir")"
+    local skilldir
+    while IFS= read -r -d '' skilldir; do
+      local skillname; skillname="$(basename "$skilldir")"
+      [[ -f "$skilldir/SKILL.md" ]] || continue
+      mkdir -p "$dest/$catname/$skillname"
+      cp "$skilldir/SKILL.md" "$dest/$catname/$skillname/SKILL.md"
+      (( count++ )) || true
+    done < <(find "$catdir" -mindepth 1 -maxdepth 1 -type d -print0)
+  done < <(find "$src" -mindepth 1 -maxdepth 1 -type d -print0)
+
+  ok "Hermes Agent: $count 个 skills -> $dest"
+}
+
 install_kiro() {
   local src="$INTEGRATIONS/kiro"
   local dest="${HOME}/.kiro/agents"
@@ -425,6 +455,7 @@ install_tool() {
     codex)       install_codex       ;;
     deerflow)    install_deerflow    ;;
     workbuddy)   install_workbuddy   ;;
+    hermes)      install_hermes      ;;
     kiro)        install_kiro        ;;
   esac
 }
