@@ -2,7 +2,7 @@
 
 🌐 [簡體中文](README.md) | **繁體中文** | [English (upstream)](https://github.com/msitarzewski/agency-agents)
 
-> **239 個即插即用的 AI 專家角色** — 覆蓋工程、設計、行銷、產品、遊戲、安全、GIS、金融等 20 個部門。不是通用提示詞範本，每個智能體都有獨立的人設、專業流程和可交付成果。支援 Claude Code / Cursor / Copilot 等 17 種 AI 程式設計工具。
+> **266 個即插即用的 AI 專家角色** — 覆蓋工程、設計、行銷、產品、遊戲、安全、GIS、金融等 20 個部門。不是通用提示詞範本，每個智能體都有獨立的人設、專業流程和可交付成果。支援 Claude Code / Cursor / Copilot 等 17 種 AI 程式設計工具。
 
 [agency-agents](https://github.com/msitarzewski/agency-agents) 的中文社群版。在完整翻譯上游的基礎上，新增了 50 個中國市場原創智能體（小紅書、抖音、微信、B站、飛書、釘釘等平台運營，以及跨境電商、政務ToG、醫療合規、Qt 工業上位機、機械設計、畜禽養殖檔案核對等垂直領域）。
 
@@ -14,7 +14,7 @@
 
 | 🤖 AI 智能體 | 🌏 英文版翻譯 | 🇨🇳 中國市場原創 | 🧠 支援工具 | 🏢 部門 |
 |:---:|:---:|:---:|:---:|:---:|
-| **239** | **188** | **50** | **17 種** | **20 個** |
+| **266** | **215** | **50** | **17 種** | **20 個** |
 
 ---
 
@@ -68,7 +68,7 @@ ao compose "幫我寫一篇關於 AI Agent 的深度分析文章" --run
 
 ## 🖼️ 線上瀏覽全部專家（無需安裝）
 
-搜尋 / 按部門篩選 / 查看與**複製每位專家的完整提示詞** —— 全部 239 位，直接在瀏覽器裡看：
+搜尋 / 按部門篩選 / 查看與**複製每位專家的完整提示詞** —— 全部 266 位，直接在瀏覽器裡看：
 
 <p align="center">
   <a href="https://ao.aiolaola.com/experts">
@@ -698,7 +698,7 @@ cd /your/project
 
 **⚠️ 關於「裝了但幾乎不自動觸發」**（見 [issue #59](https://github.com/jnMetaCode/agency-agents-zh/issues/59)）：
 
-轉換出的 rule 預設 `alwaysApply: false` + 空 `globs:`，屬於 "agent-requested rule"——Trae 模型讀 description 自行決定是否載入。**全裝 215 條 rule 會讓 description 互相稀釋、幾乎命中不到任何一條**，這是設計行為不是 bug。
+轉換出的 rule 預設 `alwaysApply: false` + 空 `globs:`，屬於 "agent-requested rule"——Trae 模型讀 description 自行決定是否載入。**全裝 266 條 rule 會讓 description 互相稀釋、幾乎命中不到任何一條**，這是設計行為不是 bug。
 
 **正確姿勢**：
 
